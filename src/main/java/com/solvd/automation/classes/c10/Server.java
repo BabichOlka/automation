@@ -23,7 +23,6 @@ public class Server {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 8000;
 
-
     public static void main(String[] args) {
         LOGGER.info(String.format("Listening on %s:%d", HOST, PORT));
 
@@ -38,9 +37,7 @@ public class Server {
         }
 
         while (true) {
-
             try {
-
                 assert serverSocket != null;
                 socket = serverSocket.accept();
                 LOGGER.info("Successfully connected to " + socket);
@@ -51,8 +48,6 @@ public class Server {
                 for (String clientPath : AVAILABLE_CLIENTS) {
                     listen(clientPath);
                 }
-
-
                 Thread.sleep(TimeConstant.TIME_TO_DELAY);
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
