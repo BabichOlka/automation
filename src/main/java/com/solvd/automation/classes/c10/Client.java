@@ -6,7 +6,6 @@ import com.solvd.automation.io.exception.UnableToReadException;
 import com.solvd.automation.io.interfaces.Packable;
 import com.solvd.automation.util.PropertyUtil;
 import com.solvd.automation.util.SerializationUtil;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +26,6 @@ import java.util.Scanner;
  * 4. refactoring
  * 5. fixes
  */
-@Log4j2
 public class Client {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
