@@ -19,7 +19,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * 1. object streams
@@ -32,41 +34,37 @@ import java.util.Scanner;
 public class Client {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
+    public static Set<String> chatHistory = new HashSet<>();
 
-    public static void main(String[] args) throws IOException, UnableToReadException, InterruptedException {
+    public static void main(String[] args) throws  InterruptedException {
         final String HOST = PropertyUtil.getValueByKey(C10Constant.HOSTNAME);
         final int PORT = Integer.parseInt(PropertyUtil.getValueByKey(C10Constant.PORT));
         final String TOKEN = PropertyUtil.getValueByKey(C10Constant.TOKEN);
 
 
-            connect( HOST, PORT, TOKEN);
-           // logger.info(((ResponseMessage) getResponse()).getResp());
+        connect(HOST, PORT, TOKEN);
+        // logger.info(((ResponseMessage) getResponse()).getResp());
 
-            Scanner in = new Scanner(System.in);
+        Scanner in = new Scanner(System.in);
 
-            while (true) {
-                logger.info("Enter your message:");
-                String answer = in.nextLine();
-
-                if (StringUtils.trim(answer).equalsIgnoreCase("GoodBye")) {
-                    logger.info("GoodBye");
-                    break;
-                } /*else if (answer.equalsIgnoreCase("refresh")){
-                    Packable pkg = new ResponseMessage(HOST, PORT, "", "jhhhj", 200);
-                    SerializationUtil.writeResponse(pkg);
-                   // Packable obj = SerializationUtil.readResponse();
-                  //  ResponseMessage msg = ((ResponseMessage) obj);
-                   // String m = Server.chesk(msg.getResp());
-                  //  logger.info(EmojiParser.parseToUnicode(m));
-                };*/
-                Packable pkg = new ConnectMessage(HOST, PORT, TOKEN, answer);
-                SerializationUtil.writeObject(pkg);
-                Thread.sleep(TimeConstant.TIME_TO_DELAY);
-                logger.info(EmojiParser.parseToUnicode(((ResponseMessage) getResponse()).getResp()));
+        while (true) {
+            logger.info("Enter your message:");
+            String answer = in.nextLine();
+            chatHistory.add(answer);
+            if (StringUtils.trim(answer).equalsIgnoreCase("GoodBye")) {
+                logger.info("GoodBye");
+                break;
+            } else if (answer.equalsIgnoreCase("refresh")) {
+                logger.info(chatHistory);
             }
-          }
+            Packable pkg = new ConnectMessage(HOST, PORT, TOKEN, answer);
+            SerializationUtil.writeObject(pkg);
+            Thread.sleep(TimeConstant.TIME_TO_DELAY);
+            logger.info(EmojiParser.parseToUnicode(((ResponseMessage) getResponse()).getResp()));
+        }
+    }
 
-    private static void connect( final String host, final int port, final String token) {
+    private static void connect(final String host, final int port, final String token) {
         String msg = "Conn";
         Packable pkg = new ConnectMessage(host, port, token, msg);
         SerializationUtil.writeObject(pkg);

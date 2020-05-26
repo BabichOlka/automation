@@ -7,21 +7,18 @@ import com.solvd.automation.io.exception.UnableToReadException;
 import com.solvd.automation.io.impl.file.StreamTextFileReader;
 import com.solvd.automation.io.interfaces.Packable;
 import com.solvd.automation.util.SerializationUtil;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.net.ServerSocket;
-import java.util.*;
-import java.util.logging.Logger;
-import java.net.Socket;
-import java.io.IOException;
-import java.util.stream.Collectors;
 import com.vdurmont.emoji.EmojiParser;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Server {
     private static final Logger LOGGER = Logger.getLogger(Server.class.getSimpleName());
-    public  static Set<String> chatHistory;
+    public static Set<String> chatHistory = new HashSet<>();
     private static final List<String> AVAILABLE_CLIENTS = Arrays.asList("user");
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 8000;
@@ -31,10 +28,10 @@ public class Server {
     static {
         try {
             offences = Arrays.stream(
-                        new StreamTextFileReader(System.getProperty("user.dir") + "/src/main/resources/words-all.txt")
-                                .read()
-                                .split("\r\n"))
-                        .collect(Collectors.toSet());
+                    new StreamTextFileReader(System.getProperty("user.dir") + "/src/main/resources/words-all.txt")
+                            .read()
+                            .split("\r\n"))
+                    .collect(Collectors.toSet());
         } catch (UnableToReadException e) {
             e.printStackTrace();
         }
@@ -101,11 +98,11 @@ public class Server {
             }
             builder.append(" ").append(word);
         }
-       // System.out.println(builder.toString());
+
         return builder.toString();
     }
 }
-    
+
 //    private static final Logger LOGGER = Logger.getLogger(Server.class.getSimpleName());
 //
 //    private static final List<String> AVAILABLE_CLIENTS = new ArrayList<>();
