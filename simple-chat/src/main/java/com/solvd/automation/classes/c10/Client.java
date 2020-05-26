@@ -3,10 +3,12 @@ package com.solvd.automation.classes.c10;
 import com.solvd.automation.classes.c10.bo.ConnectMessage;
 import com.solvd.automation.classes.c10.bo.ResponseMessage;
 import com.solvd.automation.constant.C10Constant;
+import com.solvd.automation.constant.TimeConstant;
 import com.solvd.automation.io.exception.UnableToReadException;
 import com.solvd.automation.io.interfaces.Packable;
 import com.solvd.automation.util.PropertyUtil;
 import com.solvd.automation.util.SerializationUtil;
+import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,43 +33,38 @@ public class Client {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
 
-    public static void main(String[] args) throws IOException, UnableToReadException {
+    public static void main(String[] args) throws IOException, UnableToReadException, InterruptedException {
         final String HOST = PropertyUtil.getValueByKey(C10Constant.HOSTNAME);
         final int PORT = Integer.parseInt(PropertyUtil.getValueByKey(C10Constant.PORT));
         final String TOKEN = PropertyUtil.getValueByKey(C10Constant.TOKEN);
 
-        String path = "src/main/resources/client1";
 
-        try {
-            Path p = Paths.get(path);
-            try {
-                Files.createFile(p);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             connect( HOST, PORT, TOKEN);
-            logger.info(((ResponseMessage) getResponse()).getResp());
-            //System.out.println(((ResponseMessage) getResponse()).getResp());
+           // logger.info(((ResponseMessage) getResponse()).getResp());
 
             Scanner in = new Scanner(System.in);
 
             while (true) {
                 logger.info("Enter your message:");
                 String answer = in.nextLine();
+
                 if (StringUtils.trim(answer).equalsIgnoreCase("GoodBye")) {
+                    logger.info("GoodBye");
                     break;
-                }
+                } /*else if (answer.equalsIgnoreCase("refresh")){
+                    Packable pkg = new ResponseMessage(HOST, PORT, "", "jhhhj", 200);
+                    SerializationUtil.writeResponse(pkg);
+                   // Packable obj = SerializationUtil.readResponse();
+                  //  ResponseMessage msg = ((ResponseMessage) obj);
+                   // String m = Server.chesk(msg.getResp());
+                  //  logger.info(EmojiParser.parseToUnicode(m));
+                };*/
                 Packable pkg = new ConnectMessage(HOST, PORT, TOKEN, answer);
                 SerializationUtil.writeObject(pkg);
+                Thread.sleep(TimeConstant.TIME_TO_DELAY);
+                logger.info(EmojiParser.parseToUnicode(((ResponseMessage) getResponse()).getResp()));
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            Files.delete(Paths.get(path));
-        }
-
-    }
+          }
 
     private static void connect( final String host, final int port, final String token) {
         String msg = "Conn";
@@ -79,26 +76,3 @@ public class Client {
         return SerializationUtil.readResponse();
     }
 }
-//        Socket socket = null;
-//        DataOutputStream os = null;
-//
-//        String path = System.getProperty("user.dir") + "/src/client_" + (int) (Math.random() * 10000);
-//        String responsePath = path + "_response";
-//        Path p1 = Paths.get(path);
-//        Path p2 = Paths.get(responsePath);
-//
-//        try {
-//            Files.createFile(p1);
-//            Files.createFile(p2);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        try {
-//            socket = new Socket(HOST, PORT);
-//            os = new DataOutputStream(socket.getOutputStream());
-//            System.out.println(path);
-//            os.writeBytes(path + "\n");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }

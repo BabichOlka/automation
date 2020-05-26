@@ -10,21 +10,18 @@ import com.solvd.automation.util.SerializationUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
-import java.util.ArrayList;
 import java.net.Socket;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import com.vdurmont.emoji.EmojiParser;
 
 public class Server {
     private static final Logger LOGGER = Logger.getLogger(Server.class.getSimpleName());
-
+    public  static Set<String> chatHistory;
     private static final List<String> AVAILABLE_CLIENTS = Arrays.asList("user");
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 8000;
@@ -66,12 +63,12 @@ public class Server {
             ConnectMessage msg = ((ConnectMessage) obj);
             if (msg.getHost().equals(HOST) && msg.getPort() == PORT && AVAILABLE_CLIENTS.contains(msg.getToken())) {
                 String m = chesk(msg.getMessage());
+                chatHistory.add(m);
+                System.out.println(chatHistory);
                 LOGGER.info(EmojiParser.parseToUnicode(m));
-
-                Packable resp = new ResponseMessage(HOST, PORT, "", "SUCCESS", 200);
+                Packable resp = new ResponseMessage(HOST, PORT, "", m, 200);
                 sendResponse(resp);
             }
-
         }
     }
 

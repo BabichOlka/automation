@@ -7,11 +7,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WordsFilter {
-
+ private Server chatHistory;
     public static void main(String[] args) throws UnableToReadException {
-        Scanner in = new Scanner(System.in);
-        String answer = in.nextLine();
-        chesk(answer);
+       // Scanner in = new Scanner(System.in);
+       // String answer = in.nextLine();
+       // chesk(answer);
+        System.out.println(Server.chatHistory);
     }
 
     public static String newWord(String answer) throws UnableToReadException {
@@ -45,7 +46,7 @@ public class WordsFilter {
             }
             builder.append(" ").append(word);
         }
-        System.out.println(builder.toString());
+        //System.out.println(builder.toString());
         return builder.toString();
     }
 }
