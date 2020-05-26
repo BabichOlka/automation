@@ -7,56 +7,104 @@ import com.solvd.automation.io.impl.stream.ObjectWriter;
 import com.solvd.automation.io.interfaces.Packable;
 
 public class SerializationUtil {
-    private String dataFilePath  = System.getProperty("user.dir") + "\\src\\serial";
-    private String dataFileResponse = System.getProperty("user.dir") + "\\src\\serial_response";
+    private static final String DATA_FILE_PATH = System.getProperty("user.dir") + "/src/main/resources/serial";
+    private static final String DATA_FILE_PATH_RESPONSE = System.getProperty("user.dir") + "/src/main/resources/serial_response";
 
-    private static ObjectReader objectReader;
-    private static  ObjectReader objectReaderResponse;
+    private static final ObjectReader READER = new ObjectReader(DATA_FILE_PATH);
+    private static final ObjectReader READER_RESPONSE = new ObjectReader(DATA_FILE_PATH_RESPONSE);
 
-    public SerializationUtil(String dataFilePath, String dataFileResponse) {
-        this.dataFilePath = dataFilePath;
-        this.dataFileResponse = dataFileResponse;
 
-        this.objectReader = new ObjectReader(dataFilePath);
-        this.objectReaderResponse = new ObjectReader(dataFileResponse);
-    }
-
-    public void writeObject(Packable obj) {
+    public static void writeObject(Packable obj) {
         try {
-            new ObjectWriter().write(dataFilePath, obj);
+            new ObjectWriter().write(DATA_FILE_PATH, obj);
         } catch (UnableToWriteException e) {
             e.printStackTrace();
-            throw new RuntimeException(String.format("%s is unable to write!", dataFilePath));
+            throw new RuntimeException(String.format("%s is unable to write!", DATA_FILE_PATH));
         }
     }
 
-    public Packable readObject() {
+    public static Packable readObject() {
         try {
-            return objectReader.read();
+            return READER.read();
         } catch (UnableToReadException e) {
             e.printStackTrace();
-            throw new RuntimeException(String.format("%s is unable to read!", dataFilePath));
+            throw new RuntimeException(String.format("%s is unable to read!", DATA_FILE_PATH));
         }
 
     }
 
-    public Packable readResponse() {
+    public static Packable readResponse() {
         try {
-            return objectReaderResponse.read();
+            return READER_RESPONSE.read();
         } catch (UnableToReadException e) {
             e.printStackTrace();
-            throw new RuntimeException(String.format("%s is unable to read!", dataFileResponse));
+            throw new RuntimeException(String.format("%s is unable to read!", DATA_FILE_PATH_RESPONSE));
         }
 
     }
 
-    public void writeResponse(Packable obj) {
+    public static void writeResponse(Packable obj) {
         try {
-            new ObjectWriter().write(dataFileResponse, obj);
+            new ObjectWriter().write(DATA_FILE_PATH_RESPONSE, obj);
         } catch (UnableToWriteException e) {
             e.printStackTrace();
-            throw new RuntimeException(String.format("%s is unable to write!", dataFileResponse));
+            throw new RuntimeException(String.format("%s is unable to write!", DATA_FILE_PATH_RESPONSE));
         }
     }
 
 }
+
+//public class SerializationUtil {
+//    private String dataFilePath  = System.getProperty("user.dir") + "\\src\\serial";
+//    private String dataFileResponse = System.getProperty("user.dir") + "\\src\\serial_response";
+//
+//    private static ObjectReader objectReader = new ObjectReader();
+//    private static  ObjectReader objectReaderResponse;
+//
+////    public SerializationUtil(String dataFilePath, String dataFileResponse) {
+////        this.dataFilePath = dataFilePath;
+////        this.dataFileResponse = dataFileResponse;
+////
+////        this.objectReader = new ObjectReader(dataFilePath);
+////        this.objectReaderResponse = new ObjectReader(dataFileResponse);
+////    }
+//
+//    public static void writeObject(Packable obj) {
+//        try {
+//            new ObjectWriter().write(dataFilePath, obj);
+//        } catch (UnableToWriteException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(String.format("%s is unable to write!", dataFilePath));
+//        }
+//    }
+//
+//    public static Packable readObject() {
+//        try {
+//            return objectReader.read();
+//        } catch (UnableToReadException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(String.format("%s is unable to read!", dataFilePath));
+//        }
+//
+//    }
+//
+//    public static Packable readResponse() {
+//        try {
+//            return objectReaderResponse.read();
+//        } catch (UnableToReadException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(String.format("%s is unable to read!", dataFileResponse));
+//        }
+//
+//    }
+//
+//    public static void writeResponse(Packable obj) {
+//        try {
+//            new ObjectWriter().write(dataFileResponse, obj);
+//        } catch (UnableToWriteException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(String.format("%s is unable to write!", dataFileResponse));
+//        }
+//    }
+//
+//}
