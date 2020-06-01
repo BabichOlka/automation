@@ -12,12 +12,6 @@ import java.util.stream.Collectors;
 
 public class CountryFilter implements MessegeFilter {
 
-    public static String firstUpperCase(String word) {
-        if (word == null || word.isEmpty()) return "";
-        return word.substring(0, 1).toUpperCase() + word.substring(1);
-    }
-
-
     private static Set<String> names;
 
     static {
@@ -31,16 +25,8 @@ public class CountryFilter implements MessegeFilter {
             e.printStackTrace();
         }
     }
-    public static Set<String> getNewSet(Set<String> names){
-        Set<String> newNames = new HashSet<>();
 
-        for (String s:names) {
-            for (String a: s.split(" ")){
-                newNames.add( a.toLowerCase());
-            }
-        } return newNames;
-    }
-    //@Override
+    @Override
     public  String apply(String message) {
         String[] splittedMsg = message.split(" ");
         StringBuilder builder = new StringBuilder("");

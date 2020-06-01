@@ -3,10 +3,7 @@ package com.solvd.automation.classes.c10;
 import com.solvd.automation.classes.c10.bo.ConnectMessage;
 import com.solvd.automation.classes.c10.bo.ResponseMessage;
 import com.solvd.automation.classes.c10.filter.MessegeFilter;
-import com.solvd.automation.classes.c10.filter.impl.CapitalFilter;
-import com.solvd.automation.classes.c10.filter.impl.CountryFilter;
-import com.solvd.automation.classes.c10.filter.impl.NameFilter;
-import com.solvd.automation.classes.c10.filter.impl.PoinFilter;
+import com.solvd.automation.classes.c10.filter.impl.*;
 import com.solvd.automation.constant.TimeConstant;
 import com.solvd.automation.io.exception.UnableToReadException;
 import com.solvd.automation.io.impl.file.StreamTextFileReader;
@@ -28,20 +25,6 @@ public class Server {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 8000;
 
-
-    static Set<String> offences;
-
-    static {
-        try {
-            offences = Arrays.stream(
-                    new StreamTextFileReader(System.getProperty("user.dir") + "/src/main/resources/words-all.txt")
-                            .read()
-                            .split("\r\n"))
-                    .collect(Collectors.toSet());
-        } catch (UnableToReadException e) {
-            e.printStackTrace();
-        }
-    }
 
     public Server() throws UnableToReadException {
     }
@@ -67,24 +50,28 @@ public class Server {
         MessegeFilter countryFilter = new CountryFilter();
         MessegeFilter capitalFilter = new CapitalFilter();
         MessegeFilter pointFilter = new PoinFilter();
+        MessegeFilter offensesFilter = new OffensesFilter();
+        MessegeFilter emojiFilter = new EmodgiFilter();
         Set<MessegeFilter> filters = new HashSet<>();
         filters.add(nameFilter);
         filters.add(capitalFilter);
         filters.add(countryFilter);
         filters.add(pointFilter);
+        filters.add(offensesFilter);
+        filters.add(emojiFilter);
         Packable obj = SerializationUtil.readObject();
         if (obj != null) {
             ConnectMessage msg = ((ConnectMessage) obj);
             if (msg.getHost().equals(HOST) && msg.getPort() == PORT && AVAILABLE_CLIENTS.contains(msg.getToken())) {
-                String m = chesk(msg.getMessage());
-                chatHistory.add(m);
-              //n.apply(m);
-                System.out.println("name" + nameFilter.apply(m));
-                for (MessegeFilter filter: filters){
-                  m = filter.apply(m);
+                String m = msg.getMessage();
+                // chatHistory.add(m);
+                //n.apply(m);
+                System.out.println("name" + nameFilter.apply(msg.getMessage()));
+                for (MessegeFilter filter : filters) {
+                    m = filter.apply(m);
                 }
-                System.out.println(chatHistory);
-                LOGGER.info(EmojiParser.parseToUnicode(m));
+                //System.out.println(chatHistory);
+                LOGGER.info(m);
                 Packable resp = new ResponseMessage(HOST, PORT, "", m, 200);
                 sendResponse(resp);
             }
@@ -94,34 +81,6 @@ public class Server {
     private static void sendResponse(Packable pkg) {
         SerializationUtil.writeResponse(pkg);
     }
-
-    public static String newWord(String answer) throws UnableToReadException {
-        StringBuilder sb = new StringBuilder(answer);
-        sb.setCharAt(1, '*');
-        String res = sb.toString();
-        return res;
-    }
-
-    public static String chesk(String msg) throws UnableToReadException {
-
-        String[] splittedMsg = msg.split(" ");
-        StringBuilder builder = new StringBuilder("");
-
-        for (String word : splittedMsg) {
-            try {
-
-                if (offences.contains(word.toLowerCase())) {
-                    word = newWord(word);
-                } else {
-                    word = word;
-                }
-            } catch (UnableToReadException e) {
-                e.printStackTrace();
-            }
-            builder.append(" ").append(word);
-        }
-
-        return builder.toString();
-    }
 }
+
 
