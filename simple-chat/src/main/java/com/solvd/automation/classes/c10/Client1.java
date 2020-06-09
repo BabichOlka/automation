@@ -11,26 +11,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.crypto.Data;
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
+
+import static java.util.Collections.*;
 
 public class Client1 {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
-    public static Set<Message> chatHistory = new LinkedHashSet<>();
+    public static List<Message> chatHistory = Collections.synchronizedList(new ArrayList<>());
 
     private static String pathTo = "src/main/resources/message.xml";
-
 
     public static void main(String[] args) throws InterruptedException {
         final String pathTo = "src/main/resources/message.xml";
         final String HOST = PropertyUtil.getValueByKey(C10Constant.HOSTNAME);
         final int PORT = Integer.parseInt(PropertyUtil.getValueByKey(C10Constant.PORT));
         final String TOKEN = PropertyUtil.getValueByKey(C10Constant.TOKEN);
-        Set<Message> chatHistory = new LinkedHashSet<Message>();
+        List<Message> chatHistory = new ArrayList<>();
 
         connect(HOST, PORT, TOKEN, new Date());
 
@@ -46,17 +45,18 @@ public class Client1 {
             message.setPort(PORT);
             message.setToken(TOKEN);
             chatHistory.add(message);
+            writeMessage(message, pathTo);
             if (answer.equalsIgnoreCase("stop")) {
                 logger.info("stop");
                 break;
             } else if (answer.equalsIgnoreCase("refresh")) {
+                sortHistory(chatHistory);
                 logger.info(chatHistory);
             }
-            writeMessage(message, pathTo);
-            //Packable pkg = new ConnectMessage(HOST, PORT, TOKEN, answer);
-            //SerializationUtil.writeObject(pkg);
+            readMessage(pathTo);
+
             Thread.sleep(TimeConstant.TIME_TO_DELAY);
-            logger.info(message.toString());
+            logger.info(readMessage(pathTo));
         }
     }
 
@@ -69,12 +69,8 @@ public class Client1 {
         message.setPort(port);
         message.setToken(token);
         writeMessage(message, pathTo);
-        //Packable pkg = new ConnectMessage(host, port, token, msg);
-        //SerializationUtil.writeObject(pkg);
+
     }
-//    private static Packable getResponse() {
-//        return SerializationUtil.readResponse();
-//    }
 
     private static Message readMessage(String pathTo) {
         try {
@@ -97,4 +93,14 @@ public class Client1 {
             throw new RuntimeException("Something went wrong while marshalling!");
         }
     }
+
+    public static void sortHistory(List<Message> chatHistory) {
+        sort(chatHistory, new Comparator<Message>() {
+            public int compare(Message o1, Message o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
+
+    }
+
 }

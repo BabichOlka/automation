@@ -6,7 +6,7 @@ import java.util.Date;
 
 @XmlRootElement(name = "message")
 @XmlType(propOrder = { "host", "port","token" , "msg", "date" })
-public class Message {
+public class Message implements Comparable<Message>{
 
     private String host;
     private int port;
@@ -70,5 +70,9 @@ public class Message {
     @Override
     public String toString() {
         return "Message [" + host + " " + port + " "+" "+token+" "+msg + " " + date.toString() + "]";
+    }
+    @Override
+    public int compareTo(Message o) {
+        return getDate().compareTo(o.getDate());
     }
 }
