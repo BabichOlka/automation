@@ -1,14 +1,17 @@
 package com.solvd.automation.classes.c10;
 
-
 import com.solvd.automation.classes.c10.filter.MessegeFilter;
 import com.solvd.automation.classes.c10.filter.impl.*;
 import com.solvd.automation.classes.c15.Message;
+import com.solvd.automation.classes.c15.UserInfo;
 import com.solvd.automation.classes.c15.XMLMarshaller;
 import com.solvd.automation.classes.c15.XMLUnmarshaller;
 import com.solvd.automation.constant.TimeConstant;
 import com.solvd.automation.io.exception.UnableToReadException;
 import com.solvd.automation.io.exception.UnableToWriteException;
+import com.solvd.automation.sql.dao.impl.MessageDAOimp;
+import com.solvd.automation.sql.dao.impl.UserDAOimp;
+
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.*;
@@ -22,6 +25,8 @@ public class Server1 {
     private static final int PORT = 8000;
     private static HashSet<MessegeFilter> filters = new HashSet<>();
     private static String pathTo = "src/main/resources/message.xml";
+    private final UserDAOimp userDAO = new UserDAOimp();
+    private final MessageDAOimp messageDAO = new MessageDAOimp();
 
     static {
         filters.add(new EmodgiFilter());
@@ -46,15 +51,18 @@ public class Server1 {
     // TODO: filter msgs
     public static void listen() throws UnableToReadException {
         Message msg = readMessage(pathTo);
+        MessageDAOimp messageDAO = new MessageDAOimp();
         if (msg != null) {
             Connection conn = new Connection(pathTo);
             conn.start();
-            if (msg.getHost().equals(HOST) && msg.getPort() == PORT && AVAILABLE_CLIENTS.contains(msg.getToken())) {
+            if (msg.getHost().equals(HOST) && msg.getPort() ==
+                    PORT && AVAILABLE_CLIENTS.contains(msg.getToken())) {
                 String m = "";
                 for (MessegeFilter filter : filters) {
                     m = filter.apply(msg.getMsg());
                 }
                 msg.setMsg(m);
+                messageDAO.create(msg);
                 chatHistory.add(msg);
                 LOGGER.info(msg.toString());
                 writeMessage(msg, pathTo);
@@ -102,6 +110,10 @@ public class Server1 {
 
         @Override
         public void run() {
+           final UserDAOimp userDAO = new UserDAOimp();
+           final MessageDAOimp messageDAO = new MessageDAOimp();
+            UserInfo userInfo = new UserInfo();
+            userDAO.create(userInfo);
             Message msg = readMessage(path);
             LOGGER.info(msg.getMsg());
             chatHistory.add(msg);

@@ -7,7 +7,8 @@ import java.util.Date;
 @XmlRootElement(name = "message")
 @XmlType(propOrder = { "host", "port","token" , "msg", "date" })
 public class Message implements Comparable<Message>{
-
+    private String id;
+    private String userId;
     private String host;
     private int port;
     private String token;
@@ -17,14 +18,31 @@ public class Message implements Comparable<Message>{
     public Message() {
 
     }
+    public Message(String id, String  msg, String userIdId){
+        this.id = id;
+        this.msg = msg;
+        this.userId = userId;
+        this.date = new Date();
+    }
+    public Message(String msg){
+        this.msg = msg;
+        this.date = new Date();
+    }
 
-    public Message(String host, int port, String token, String msg, Date date) {
-        this.host = host;
+    public Message(String id, String host, int port, String token, String msg, Date date){
+        this.id = id;
         this.port = port;
         this.token = token;
         this.msg = msg;
         this.date = date;
 
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    @XmlElement(name = "id")
+    public String getId() {
+        return id;
     }
 
     public String getHost() {

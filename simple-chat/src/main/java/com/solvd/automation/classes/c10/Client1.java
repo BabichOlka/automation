@@ -6,6 +6,7 @@ import com.solvd.automation.classes.c15.XMLUnmarshaller;
 import com.solvd.automation.constant.C10Constant;
 import com.solvd.automation.constant.TimeConstant;
 import com.solvd.automation.io.exception.UnableToWriteException;
+import com.solvd.automation.sql.dao.impl.MessageDAOimp;
 import com.solvd.automation.util.PropertyUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +22,7 @@ public class Client1 {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
     public static List<Message> chatHistory = Collections.synchronizedList(new ArrayList<>());
-
+    private  MessageDAOimp messageDAO = new MessageDAOimp();
     private static String pathTo = "src/main/resources/message.xml";
 
     public static void main(String[] args) throws InterruptedException {
@@ -38,18 +39,21 @@ public class Client1 {
         while (true) {
             logger.info("Enter your message:");
             Message message = new Message();
+            MessageDAOimp messageDAO = new MessageDAOimp();
             String answer = in.nextLine();
             message.setMsg(answer);
             message.setDate(new Date());
             message.setHost(HOST);
             message.setPort(PORT);
             message.setToken(TOKEN);
+            messageDAO.create(message);
             chatHistory.add(message);
             writeMessage(message, pathTo);
             if (answer.equalsIgnoreCase("stop")) {
                 logger.info("stop");
                 break;
             } else if (answer.equalsIgnoreCase("refresh")) {
+                messageDAO.getHistory();
                 sortHistory(chatHistory);
                 logger.info(chatHistory);
             }
