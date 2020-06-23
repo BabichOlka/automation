@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="attribute_mapper">
+
+    <select id="getById" resultMap="attribute_map">
+        SELECT *
+        FROM attribute
+        WHERE attribute.idattribute = #{id}
+    </select>
+    <update id="update">
+        UPDATE attribute SET
+        nameAttribut = #{nameAttribut},
+        WHERE idattribute = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM attribute
+        WHERE idattribute = #{id}
+    </delete>
+
+    <select id="getAll" resultMap="attribute_map">
+        SELECT * FROM attribute
+    </select>
+
+    <insert id="create">
+        INSERT INTO attribute (nameAttribut)
+        VALUES (#{nameAttribut})
+    </insert>
+
+    <resultMap id="attribute_map" type="sql.model.Attribute" autoMapping="false">
+        <id property="id" column="idattribute" />
+        <result property="nameAttribut" column="nameAttribut"/>
+    </resultMap>
+
+</mapper>
